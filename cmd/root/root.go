@@ -3,6 +3,7 @@ package root
 
 import (
 	"github.com/k1nho/tab-cli/cmd/open"
+	"github.com/k1nho/tab-cli/cmd/update"
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +17,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 
 	cmd.AddCommand(open.NewOpenCommand())
+	cmd.AddCommand(update.NewUpdateCommand())
 
 	return cmd, nil
 }
