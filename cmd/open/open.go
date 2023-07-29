@@ -4,8 +4,11 @@ package open
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
+	"os/exec"
 	"runtime"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -14,6 +17,7 @@ import (
 // defined configurations
 type Options struct {
 	FilePath string
+	URLs     []string
 }
 
 const openLongDesc string = `
@@ -38,6 +42,7 @@ func NewOpenCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			opts.URLs = append(opts.URLs, args...)
 			return run(opts)
 		},
 	}
@@ -53,6 +58,18 @@ func run(opts *Options) error {
 	var err error
 	var urls []string
 
+	file, err := os.OpenFile(opts.FilePath, os.O_RDWR, 0644)
+
+	if err != nil {
+		return err
+	}
+
+	err = json.NewDecoder(file).Decode(&urls)
+
+	if err != nil {
+		return err
+	}
+
 	// Open the json file if given
 	if opts.FilePath != "" {
 		bytes, err := os.ReadFile("series.json")
@@ -66,19 +83,46 @@ func run(opts *Options) error {
 
 	switch osRuntime {
 	case "windows":
-		err = openTabWindows()
+		err = openTabWindows(urls)
 	default:
-		err = openTabUnix()
+		err = openTabUnix(urls)
 	}
 
 	return err
 }
 
-func openTabWindows() error {
-	return nil
+func openTabWindows(urls []string) error {
+	var wg sync.WaitGroup
+	for _, url := range urls {
+		wg.Add(1)
 
+		go func(url string, wg *sync.WaitGroup) {
+			defer wg.Done()
+			cmd := exec.Command("/C", "start", "/B", "chrome", url)
+			err := cmd.Run()
+			if err != nil {
+				fmt.Printf("Could not open %s: %v", url, err)
+			}
+		}(url, &wg)
+	}
+	wg.Wait()
+	return nil
 }
 
-func openTabUnix() error {
+func openTabUnix(urls []string) error {
+	var wg sync.WaitGroup
+	for _, url := range urls {
+		wg.Add(1)
+
+		go func(url string, wg *sync.WaitGroup) {
+			defer wg.Done()
+			cmd := exec.Command("open", "-a", "Google Chrome", url)
+			err := cmd.Run()
+			if err != nil {
+				fmt.Printf("Could not open %s: %v", url, err)
+			}
+		}(url, &wg)
+	}
+	wg.Wait()
 	return nil
 }
