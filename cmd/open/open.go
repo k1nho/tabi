@@ -58,34 +58,36 @@ func run(opts *Options) error {
 	var err error
 	var urls []string
 
-	file, err := os.OpenFile(opts.FilePath, os.O_RDWR, 0644)
-
-	if err != nil {
-		return err
-	}
-
-	err = json.NewDecoder(file).Decode(&urls)
-
-	if err != nil {
-		return err
-	}
-
 	// Open the json file if given
 	if opts.FilePath != "" {
-		bytes, err := os.ReadFile("series.json")
-
-		err = json.Unmarshal(bytes, &urls)
-
+		file, err := os.OpenFile(opts.FilePath, os.O_RDWR, 0644)
 		if err != nil {
 			return err
 		}
+
+		err = json.NewDecoder(file).Decode(&urls)
+		if err != nil {
+			return err
+		}
+
+		bytes, err := os.ReadFile("series.json")
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(bytes, &urls)
+		if err != nil {
+			return err
+		}
+
+		opts.URLs = append(opts.URLs, urls...)
 	}
 
 	switch osRuntime {
 	case "windows":
-		err = openTabWindows(urls)
+		err = openTabWindows(opts.URLs)
 	default:
-		err = openTabUnix(urls)
+		err = openTabUnix(opts.URLs)
 	}
 
 	return err
