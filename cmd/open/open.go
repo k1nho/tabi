@@ -13,11 +13,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Options are the options for the pizza bake command including user
-// defined configurations
 type Options struct {
+	// The file path to the file to be opened by tabi
 	FilePath string
-	URLs     []string
+	// The URLs to be opened by tabi
+	URLs []string
 }
 
 const openLongDesc string = `

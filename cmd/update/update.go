@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 
+	"github.com/k1nho/tab-cli/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -22,23 +23,6 @@ type Options struct {
 
 	// The file path containing the series to be updated
 	FilePath string
-}
-
-type Series struct {
-	// The url of the series
-	BaseURL string `json:"url"`
-	// The current episode of the series
-	Ep int `json:"ep"`
-	// The maximum number of episodes of the series
-	Limit int `json:"limit"`
-}
-
-func (s *Series) UpdateUp() {
-	s.Ep += 1
-}
-
-func (s *Series) UpdateDown() {
-	s.Ep -= 1
 }
 
 func NewUpdateCommand() *cobra.Command {
@@ -67,7 +51,7 @@ func NewUpdateCommand() *cobra.Command {
 }
 
 func run(opts *Options) error {
-	var series []Series
+	var series []utils.Series
 
 	file, err := os.Open(opts.FilePath)
 	if err != nil {
