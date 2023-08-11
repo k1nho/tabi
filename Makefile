@@ -11,3 +11,7 @@ build:
 .PHONY: lauch
 lauch:
 	./bin/tabi
+
+.PHONY: test
+test:
+	go test -v ./...

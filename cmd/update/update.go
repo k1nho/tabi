@@ -9,12 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const uptLongDesc string = `
-The upt command takes in a file path to a JSON file and updates the urls
-    // updating episode count by +1 of a url link in a JSON file
-    tabi series.json 
-    // updating episode count by -1 of a url link in a JSON file
-    tabi series.json -d
+const uptLongDesc string = `The upt command takes in a file path to a JSON file and updates the urls
+// updating episode count by +1 of a url link in a JSON file
+tabi series.json 
+// updating episode count by -1 of a url link in a JSON file
+tabi series.json -d
 `
 
 type Options struct {
