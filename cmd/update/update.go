@@ -95,8 +95,6 @@ func run(opts *Options) error {
 		if err != nil {
 			return err
 		}
-
 	}
-
 	return nil
 }
